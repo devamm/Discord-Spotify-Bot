@@ -69,6 +69,7 @@ const getRefreshedToken = async(refreshToken) => {
 
     } catch(e){
         console.log(e.response.data);
+        return null;
     }
 }
 
