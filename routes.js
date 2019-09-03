@@ -15,9 +15,9 @@ router.get('/auth', (req, res) => {
 router.get("/success", (req, res) => {
     res.send('success!');
     
-    const code = req.query['code'];
+    const code = req.query['code'].trim();
     //console.log(`access code:${code}`)
-    console.log(code);
+    console.log('!CODE'+code);
     process.exit(0);
 })
 

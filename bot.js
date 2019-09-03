@@ -1,4 +1,5 @@
-const {OW_TOKEN, SPOTIFY_TOKEN} = require('./secrets.js');
+const {OW_TOKEN, SPOTIFY_TOKEN, DEV_ID} = require('./secrets.js');
+const {getAuthCode, getInitialToken} = require('./auth.js')
 const axios = require('axios');
 const playlist_id = "7cDYnkRj71sbiaAPjQS51V";
 
@@ -26,6 +27,19 @@ const listener = async(msg, client) => {
                 //addToPlaylist(song_id, msg);
             }  
         })   
+    }
+
+    if(msg.content == '!auth' && msg.author.id == DEV_ID){
+       
+        await msg.channel.send('Please use this link to connect me to Spotify!\nhttp://localhost:8080/auth');
+        try{
+            const code = await getAuthCode();
+            getInitialToken(code);
+            console.log('CODE:'+code);
+        } catch(e){
+            await msg.channel.send('error with Spotify authentication')
+        }
+        
     }
 }
 
