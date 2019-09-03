@@ -1,7 +1,7 @@
-const {OW_TOKEN, SPOTIFY_TOKEN, DEV_ID} = require('./secrets.js');
+const {OW_TOKEN, SPOTIFY_TOKEN, DEV_ID, PLAYLIST_ID, CHANNEL_ID} = require('./secrets.js');
 const {getAuthCode, getInitialToken} = require('./auth.js')
 const axios = require('axios');
-const playlist_id = "7cDYnkRj71sbiaAPjQS51V";
+
 
 const startOWBot = (client) => {
 	client.login(OW_TOKEN);
@@ -18,7 +18,7 @@ const startOWBot = (client) => {
 
 const listener = async(msg, client) => {
     //REPLACE CHANNEL ID W/ OW CHANNEL HERE
-    if(msg.channel.id == '425766065524441091') {
+    if(msg.channel.id == CHANNEL_ID ) {
         const message = msg.content.split('\n');
         message.forEach(line => {
             if(line.startsWith('https://open.spotify.com/track')){ 
@@ -35,7 +35,7 @@ const listener = async(msg, client) => {
         try{
             const code = await getAuthCode();
             getInitialToken(code);
-            console.log('CODE:'+code);
+            //console.log('CODE:'+code);
         } catch(e){
             await msg.channel.send('error with Spotify authentication')
         }
@@ -46,7 +46,7 @@ const listener = async(msg, client) => {
 const addToPlaylist = async(song_id, msg) => {
     try{
         //await msg.channel.send(`adding song id "${song_id}" to playlist`)
-        const url = `https://api.spotify.com/v1/playlists/${playlist_id}/tracks`;
+        const url = `https://api.spotify.com/v1/playlists/${PLAYLIST_ID}/tracks`;
         
         const {data: result} = await axios.post(url, {
             uris: [`spotify:track:${song_id}`]
