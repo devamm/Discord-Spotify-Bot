@@ -23,10 +23,14 @@ const listener = async(msg, client) => {
             if(line.startsWith('https://open.spotify.com/track')){ 
                 
             }  
-        })
-        
+        })   
     }
-  
 }
+
+const getSongId = (url) => {
+    const idx = url.indexOf('?');
+    return idx == -1? url.slice(31) : url.slice(31, idx);
+}
+
 
 module.exports = startOWBot;
