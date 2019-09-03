@@ -2,6 +2,10 @@ const {OW_TOKEN, SPOTIFY_TOKEN, DEV_ID, PLAYLIST_ID, CHANNEL_ID} = require('./se
 const {getAuthCode, getInitialToken} = require('./auth.js')
 const axios = require('axios');
 
+let validToken = false;
+let ACCESS_TOKEN = '';
+let REFRESH_TOKEN = ''
+
 
 const startOWBot = (client) => {
 	client.login(OW_TOKEN);
@@ -9,6 +13,8 @@ const startOWBot = (client) => {
     client.on('ready', async () => {
         console.log(`Logged in as ${client.user.tag}!`);
         await client.user.setActivity('High on Humans', {type: 'LISTENING'});  
+
+        //read in refresh token (if it exists) 
       });
 
       client.on('message', msg => {
@@ -37,7 +43,7 @@ const listener = async(msg, client) => {
             getInitialToken(code);
             //console.log('CODE:'+code);
         } catch(e){
-            await msg.channel.send('error with Spotify authentication')
+            await msg.channel.send('Error with Spotify authentication')
         }
         
     }

@@ -43,4 +43,22 @@ const getInitialToken = async (authCode) => {
     }
 }
 
-module.exports = {getAuthCode, getInitialToken};
+const getRefreshedToken = async(refreshToken) => {
+    try{
+        const token = Buffer.from(SPOTIFY_CLIENT+":"+SPOTIFY_SECRET).toString('base64');
+        const {data} = await axios.post('https://accounts.spotify.com/api/token', querystring.stringify({
+            grant_type: 'refresh_token',
+            refresh_token: refreshToken
+        }), {
+            headers: {
+                'Authorization': 'Basic '+token    
+            }
+        });
+
+        console.log(data);
+    } catch(e){
+        console.log(e);
+    }
+}
+
+module.exports = {getAuthCode, getInitialToken, getRefreshedToken};
