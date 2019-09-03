@@ -21,7 +21,9 @@ const listener = async(msg, client) => {
         const message = msg.content.split('\n');
         message.forEach(line => {
             if(line.startsWith('https://open.spotify.com/track')){ 
-                
+                const song_id = getSongId(line);
+                console.log(song_id);
+                //addToPlaylist(song_id, msg);
             }  
         })   
     }
