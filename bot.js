@@ -15,4 +15,18 @@ const startOWBot = (client) => {
       });
 };
 
+const listener = async(msg, client) => {
+    //REPLACE CHANNEL ID W/ OW CHANNEL HERE
+    if(msg.channel.id == '425766065524441091') {
+        const message = msg.content.split('\n');
+        message.forEach(line => {
+            if(line.startsWith('https://open.spotify.com/track')){ 
+                
+            }  
+        })
+        
+    }
+  
+}
+
 module.exports = startOWBot;
