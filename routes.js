@@ -2,7 +2,7 @@ const router = require("express").Router();
 const {SPOTIFY_CLIENT, CALLBACK_URL} = require('./secrets.js');
 
 
-router.get('/login', (req, res) => {
+router.get('/auth', (req, res) => {
     const scopes = 'playlist-read-collaborative playlist-modify-public';
     res.redirect('https://accounts.spotify.com/authorize' +
         '?response_type=code' +
@@ -14,6 +14,11 @@ router.get('/login', (req, res) => {
 
 router.get("/success", (req, res) => {
     res.send('success!');
+    
+    const code = req.query['code'];
+    //console.log(`access code:${code}`)
+    console.log(code);
+    process.exit(0);
 })
 
 
