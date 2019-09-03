@@ -8,7 +8,7 @@ const getAuthCode = () => {
 
     return new Promise((resolve, reject) => {
         try{
-            process.stdout.on('data', async data => {
+            process.stdout.on('data', data => {
                 data = data.toString();
                 if(data.startsWith('!CODE')){
                     data = data.trim();
@@ -30,34 +30,45 @@ const getInitialToken = async (authCode) => {
            grant_type: "authorization_code",
            code: authCode,
            redirect_uri: CALLBACK_URL,
-           "client_id": SPOTIFY_CLIENT,
-           "client_secret": SPOTIFY_SECRET
+           client_id: SPOTIFY_CLIENT,
+           client_secret: SPOTIFY_SECRET
         }), {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
         });
-        console.log(data);
+        //console.log(data);
+        return {
+            refresh_token: data.refresh_token,
+            access_token: data.access_token,
+            expires_in: data.expires_in-60
+        };
     } catch(e){
-        console.log(e);
+        console.log(e.response.data);
     }
 }
 
 const getRefreshedToken = async(refreshToken) => {
     try{
-        const token = Buffer.from(SPOTIFY_CLIENT+":"+SPOTIFY_SECRET).toString('base64');
+        const auth_token = Buffer.from(SPOTIFY_CLIENT+":"+SPOTIFY_SECRET).toString('base64');
         const {data} = await axios.post('https://accounts.spotify.com/api/token', querystring.stringify({
             grant_type: 'refresh_token',
             refresh_token: refreshToken
         }), {
             headers: {
-                'Authorization': 'Basic '+token    
+                'Authorization': 'Basic '+auth_token,
+                'Content-Type': 'application/x-www-form-urlencoded'    
             }
         });
 
-        console.log(data);
+        return {
+            access_token: data.access_token,
+            refresh_token: data.refresh_token? data.refresh_token : undefined,
+            expires_in: data.expires_in-60
+        };
+
     } catch(e){
-        console.log(e);
+        console.log(e.response.data);
     }
 }
 

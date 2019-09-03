@@ -1,5 +1,5 @@
-const {OW_TOKEN, SPOTIFY_TOKEN, DEV_ID, PLAYLIST_ID, CHANNEL_ID} = require('./secrets.js');
-const {getAuthCode, getInitialToken} = require('./auth.js')
+const {OW_TOKEN, DEV_ID, PLAYLIST_ID, CHANNEL_ID} = require('./secrets.js');
+const {getAuthCode, getInitialToken, getRefreshedToken} = require('./auth.js')
 const axios = require('axios');
 
 let validToken = false;
@@ -29,8 +29,8 @@ const listener = async(msg, client) => {
         message.forEach(line => {
             if(line.startsWith('https://open.spotify.com/track')){ 
                 const song_id = getSongId(line);
-                console.log(song_id);
-                //addToPlaylist(song_id, msg);
+                //console.log(song_id);
+                addToPlaylist(song_id, msg);
             }  
         })   
     }
@@ -40,8 +40,15 @@ const listener = async(msg, client) => {
         await msg.channel.send('Please use this link to connect me to Spotify!\nhttp://localhost:8080/auth');
         try{
             const code = await getAuthCode();
-            getInitialToken(code);
-            //console.log('CODE:'+code);
+            const tokens = await getInitialToken(code);
+            
+            REFRESH_TOKEN = tokens.refresh_token;
+            ACCESS_TOKEN = tokens.access_token;
+            const expiry = tokens.expires_in;
+            validToken = true
+
+            //set timer to invalidate token 1 minute before actual expiry time
+            invalidateToken(expiry);
         } catch(e){
             await msg.channel.send('Error with Spotify authentication')
         }
@@ -50,19 +57,43 @@ const listener = async(msg, client) => {
 }
 
 const addToPlaylist = async(song_id, msg) => {
-    try{
-        //await msg.channel.send(`adding song id "${song_id}" to playlist`)
-        const url = `https://api.spotify.com/v1/playlists/${PLAYLIST_ID}/tracks`;
-        
-        const {data: result} = await axios.post(url, {
-            uris: [`spotify:track:${song_id}`]
-        }, {
-            headers: {Authorization: 'Bearer '+SPOTIFY_TOKEN}
-        });
+    let attemptedRefresh = false;
     
-    } catch(e){
-        await msg.channel.send('something went wrong');
-        console.log(e);
+    while(true){
+        try{
+            if(validToken){
+                //await msg.channel.send(`adding song id "${song_id}" to playlist`)
+                const url = `https://api.spotify.com/v1/playlists/${PLAYLIST_ID}/tracks`;
+            
+                const {data: result} = await axios.post(url, {
+                    uris: [`spotify:track:${song_id}`]
+                }, {
+                    headers: {Authorization: 'Bearer '+ACCESS_TOKEN}
+                });
+                break;
+            } else {
+                //token expired, revalidate token
+                if(attemptedRefresh == true){
+                    //subsequent failed attempts, return
+                    await msg.channel.send('something went wrong generating new token');
+                    break;
+                }
+                attemptedRefresh = true;
+                //revalidate token
+                console.log('refreshing token')
+                const newToken = getRefreshedToken(REFRESH_TOKEN);
+                ACCESS_TOKEN = newToken.access_token;
+                REFRESH_TOKEN = newToken.refresh_token? newToken.refresh_token : REFRESH_TOKEN;
+                const expiry = newToken.expires_in;
+
+                invalidateToken(expiry);
+            }
+        
+        } catch(e){
+            await msg.channel.send('something went wrong');
+            console.log(e.response.data);
+            break;
+        }
     }
 }
 
@@ -71,5 +102,14 @@ const getSongId = (url) => {
     return idx == -1? url.slice(31) : url.slice(31, idx);
 }
 
+const invalidateToken = (delayInSeconds) => {
+    if(!delayInSeconds){
+        return;
+    }
+    setTimeout(() => {
+        console.log('invalidating token now')
+        validToken = false;
+    }, delayInSeconds*1000)
+}
 
 module.exports = startOWBot;
