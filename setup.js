@@ -16,6 +16,8 @@ const SPOTIFY_SECRET = secret ? secret.SPOTIFY_SECRET: process.env.SPOTIFY_SECRE
 const CHANNEL_ID = secret ? secret.CHANNEL_ID : process.env.CHANNEL_ID;
 const PLAYLIST_ID = secret ? secret.PLAYLIST_ID : process.env.PLAYLIST_ID;
 const AUTH_URL = secret ? secret.AUTH_URL : process.env.AUTH_URL;
+const PORT = secret ? 8080 : process.env.PORT;
 
 
-module.exports = {OW_TOKEN, SPOTIFY_CLIENT, CALLBACK_URL, DEV_ID, SPOTIFY_SECRET, CHANNEL_ID, PLAYLIST_ID, AUTH_URL};
+module.exports = {OW_TOKEN, SPOTIFY_CLIENT, CALLBACK_URL, DEV_ID, SPOTIFY_SECRET, CHANNEL_ID, PLAYLIST_ID, AUTH_URL
+, PORT};
