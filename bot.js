@@ -1,4 +1,4 @@
-const { OW_TOKEN, DEV_ID, PLAYLIST_ID, CHANNEL_ID, AUTH_URL } = require("./secrets.js");
+const { OW_TOKEN, DEV_ID, PLAYLIST_ID, CHANNEL_ID, AUTH_URL } = require("./setup.js");
 const { getAuthCode, getInitialToken, getRefreshedToken} = require("./auth.js");
 const axios = require("axios");
 

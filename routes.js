@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const {SPOTIFY_CLIENT, CALLBACK_URL} = require('./secrets.js');
+const {SPOTIFY_CLIENT, CALLBACK_URL} = require('./setup.js');
 
 
 router.get('/auth', (req, res) => {

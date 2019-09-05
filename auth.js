@@ -1,5 +1,5 @@
 const {spawn} = require('child_process');
-const {SPOTIFY_CLIENT, SPOTIFY_SECRET, CALLBACK_URL} = require('./secrets.js');
+const {SPOTIFY_CLIENT, SPOTIFY_SECRET, CALLBACK_URL} = require('./setup.js');
 const axios = require('axios');
 const querystring = require('querystring');
 
