@@ -39,6 +39,8 @@ const listener = async (msg, client) => {
             const tokens = await getInitialToken(code);
 
             REFRESH_TOKEN = tokens.refresh_token;
+           // console.log('refresh token:',refresh_token);
+            //consolelog('access token:',access_token);
             ACCESS_TOKEN = tokens.access_token;
             const expiry = tokens.expires_in;
             validToken = true;
@@ -81,6 +83,11 @@ const addToPlaylist = async (song_id, msg) => {
                     return;
                 }
                 ACCESS_TOKEN = newToken.access_token;
+                if(newToken.refresh_token){
+                    console.log('recieved new refresh token');
+                } else {
+                    console.log('reusing refresh token');
+                }
                 REFRESH_TOKEN = newToken.refresh_token ? newToken.refresh_token : REFRESH_TOKEN;
                 const expiry = newToken.expires_in;
                 validToken = true;
