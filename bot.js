@@ -11,7 +11,7 @@ console.log('opening client connection')
 const host = location.origin;
 console.log(host);
 
-const socket = require('socket.io-client')(`${HOST_URL}:${PORT}`);
+const socket = require('socket.io-client')(`${HOST_URL}`);
     
 socket.on('connect', () => {
     console.log('auth client connected');
