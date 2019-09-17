@@ -1,4 +1,4 @@
-const { OW_TOKEN, DEV_ID, PLAYLIST_ID, CHANNEL_ID, AUTH_URL, PORT, HOST } = require("./setup.js");
+const { OW_TOKEN, DEV_ID, PLAYLIST_ID, CHANNEL_ID, AUTH_URL, PORT, HOST_URL } = require("./setup.js");
 const { getAuthCode, getInitialToken, getRefreshedToken} = require("./auth.js");
 const axios = require("axios");
 
@@ -7,7 +7,7 @@ let ACCESS_TOKEN = "";
 let REFRESH_TOKEN = "";
 
 console.log('opening client connection')
-const socket = require('socket.io-client')(`${HOST}:${PORT}`);
+const socket = require('socket.io-client')(`${HOST_URL}:${PORT}`);
     
 socket.on('connect', () => {
     console.log('auth client connected');
