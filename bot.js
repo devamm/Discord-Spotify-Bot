@@ -7,6 +7,10 @@ let ACCESS_TOKEN = "";
 let REFRESH_TOKEN = "";
 
 console.log('opening client connection')
+
+const host = location.origin;
+console.log(host);
+
 const socket = require('socket.io-client')(`${HOST_URL}:${PORT}`);
     
 socket.on('connect', () => {
