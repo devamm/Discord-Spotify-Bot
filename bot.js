@@ -39,7 +39,7 @@ const listener = async (msg, client) => {
                 //console.log(song_id);
                 const success = await addToPlaylist(song_id, msg);
                 if(success){
-                    //await msg.channel.send('added to playlist');
+                    await msg.react('✅');
                 }
               
             }

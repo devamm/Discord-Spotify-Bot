@@ -11,18 +11,14 @@ const getAuthCode = (socket) => {
     socket.emit("request")
     //console.log(requestedAuth);
     return new Promise(async (resolve, reject) => {
-        
         setTimeout(() => {
             socket.emit('timeout')
             reject('Request timed out. Please try again');
         }, 5*60*1000);
         
         socket.on('code', (data) => {
-            //console.log(data);
             resolve(data.code);
         })
-        //resolve(null);
-
     })    
 };
 
