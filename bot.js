@@ -26,8 +26,6 @@ const startOWBot = client => {
         listener(msg, client);
     });
 
-   
-
 };
 
 const listener = async (msg, client) => {
@@ -53,8 +51,6 @@ const listener = async (msg, client) => {
             const tokens = await getInitialToken(code);
 
             REFRESH_TOKEN = tokens.refresh_token;
-           // console.log('refresh token:',refresh_token);
-            //consolelog('access token:',access_token);
             ACCESS_TOKEN = tokens.access_token;
             const expiry = tokens.expires_in;
             validToken = true;
@@ -62,13 +58,12 @@ const listener = async (msg, client) => {
             //set timer to invalidate token 1 minute before actual expiry time
             invalidateToken(expiry);
         } catch (e) {
-            if(e.includes('Timed out')){
+            if(e.includes('timed out')){
                 await msg.channel.send(e);
             } else {
                 await msg.channel.send("Error with Spotify authentication");
                 console.log(e);
             }
-            
         }
     }
 };

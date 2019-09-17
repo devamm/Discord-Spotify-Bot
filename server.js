@@ -10,8 +10,6 @@ app.use(express.urlencoded({ extended: true }));
 
 const server =  app.listen(PORT, () => {
     console.log(`spotify test server listening on port ${PORT}!`)
-    //console.log('finished setup');
-  
 });
 
 io = require('socket.io')(server);
