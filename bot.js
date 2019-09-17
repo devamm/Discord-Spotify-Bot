@@ -1,10 +1,17 @@
-const { OW_TOKEN, DEV_ID, PLAYLIST_ID, CHANNEL_ID, AUTH_URL } = require("./setup.js");
+const { OW_TOKEN, DEV_ID, PLAYLIST_ID, CHANNEL_ID, AUTH_URL, PORT } = require("./setup.js");
 const { getAuthCode, getInitialToken, getRefreshedToken} = require("./auth.js");
 const axios = require("axios");
 
 let validToken = false;
 let ACCESS_TOKEN = "";
 let REFRESH_TOKEN = "";
+
+console.log('opening client connection')
+const socket = require('socket.io-client')(`http://localhost:${PORT}`);
+    
+socket.on('connect', () => {
+    console.log('auth client connected');
+})
 
 const startOWBot = client => {
     client.login(OW_TOKEN);
@@ -18,6 +25,9 @@ const startOWBot = client => {
     client.on("message", msg => {
         listener(msg, client);
     });
+
+   
+
 };
 
 const listener = async (msg, client) => {
@@ -35,7 +45,7 @@ const listener = async (msg, client) => {
     if (msg.content == "!auth" && msg.author.id == DEV_ID) {
         await msg.channel.send("Please use this link to connect me to Spotify!\n"+AUTH_URL);
         try {
-            const code = await getAuthCode();
+            const code = await getAuthCode(socket);
             const tokens = await getInitialToken(code);
 
             REFRESH_TOKEN = tokens.refresh_token;
@@ -49,6 +59,7 @@ const listener = async (msg, client) => {
             invalidateToken(expiry);
         } catch (e) {
             await msg.channel.send("Error with Spotify authentication");
+            console.log(e);
         }
     }
 };

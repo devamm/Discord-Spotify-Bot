@@ -1,27 +1,23 @@
-const {spawn} = require('child_process');
-const {SPOTIFY_CLIENT, SPOTIFY_SECRET, CALLBACK_URL} = require('./setup.js');
+//const {spawn} = require('child_process');
+const {SPOTIFY_CLIENT, SPOTIFY_SECRET, CALLBACK_URL, PORT} = require('./setup.js');
+
+
 const axios = require('axios');
 const querystring = require('querystring');
 
-const getAuthCode = () => {
-    const process = spawn('node', ['server']);
 
-    return new Promise((resolve, reject) => {
-        try{
-            process.stdout.on('data', data => {
-                data = data.toString();
-                if(data.startsWith('!CODE')){
-                    data = data.trim();
-                  
-                    resolve(data.slice(5));
-                }
-            })
-        } catch(e){
-            reject(e);
-        }
-    })
+const getAuthCode = (socket) => {
+    //console.log('notifying server to open window');
+    socket.emit("request")
+    //console.log(requestedAuth);
+    return new Promise(async (resolve, reject) => {
+        socket.on('code', (data) => {
+            console.log(data);
+            resolve(data.code);
+        })
+        //resolve(null);
 
-    
+    })    
 };
 
 const getInitialToken = async (authCode) => {
@@ -72,5 +68,6 @@ const getRefreshedToken = async(refreshToken) => {
         return null;
     }
 }
+
 
 module.exports = {getAuthCode, getInitialToken, getRefreshedToken};
