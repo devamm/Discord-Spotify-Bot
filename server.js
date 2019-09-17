@@ -12,8 +12,6 @@ const server =  app.listen(PORT, () => {
 
 console.log('creating server socket');
 const io = require('socket.io')(server);
-
-console.log(io);
 module.exports = {io};
 
 app.use('/', require('./routes'));
