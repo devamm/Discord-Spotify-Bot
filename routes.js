@@ -3,12 +3,6 @@ const {SPOTIFY_CLIENT, CALLBACK_URL} = require('./setup.js');
 const {io} = require('./server')
 
 let authWindow = false;
-let socket;
-
-// socket.on('auth', () => {
-//     authWindow = true;
-//     console.log('opened auth window');
-// })
 
 io.on('connection', (socket) => {
     console.log('server socket connected');
@@ -17,6 +11,10 @@ io.on('connection', (socket) => {
     sock.on('request', () => {
         //console.log('window now open');
         authWindow = true;
+    })
+
+    sock.on('timeout', () => {
+        authWindow = false;
     })
 })
 

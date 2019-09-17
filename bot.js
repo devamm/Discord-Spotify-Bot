@@ -33,11 +33,15 @@ const startOWBot = client => {
 const listener = async (msg, client) => {
     if (msg.channel.id == CHANNEL_ID) {
         const message = msg.content.split("\n");
-        message.forEach(line => {
+        message.forEach(async line => {
             if (line.startsWith("https://open.spotify.com/track")) {
                 const song_id = getSongId(line);
                 //console.log(song_id);
-                addToPlaylist(song_id, msg);
+                const success = await addToPlaylist(song_id, msg);
+                if(success){
+                    //await msg.channel.send('added to playlist');
+                }
+              
             }
         });
     }
@@ -58,8 +62,13 @@ const listener = async (msg, client) => {
             //set timer to invalidate token 1 minute before actual expiry time
             invalidateToken(expiry);
         } catch (e) {
-            await msg.channel.send("Error with Spotify authentication");
-            console.log(e);
+            if(e.includes('Timed out')){
+                await msg.channel.send(e);
+            } else {
+                await msg.channel.send("Error with Spotify authentication");
+                console.log(e);
+            }
+            
         }
     }
 };
@@ -79,19 +88,19 @@ const addToPlaylist = async (song_id, msg) => {
                         headers: { Authorization: "Bearer " + ACCESS_TOKEN }
                     }
                 );
-                return;
+                return true;
             } else {
                 //token expired, revalidate token
                 if(attemptedRetry){
                     await msg.channel.send('API Error');
-                    return;
+                    return false;
                 }
                 attemptedRetry = true;
                 console.log("refreshing token");
                 const newToken = await getRefreshedToken(REFRESH_TOKEN);
                 if (newToken == null) {
                     await msg.channel.send("something went wrong generating new token");
-                    return;
+                    return false;
                 }
                 ACCESS_TOKEN = newToken.access_token;
                 if(newToken.refresh_token){
@@ -108,7 +117,7 @@ const addToPlaylist = async (song_id, msg) => {
         } catch (e) {
             await msg.channel.send("something went wrong");
             console.log(e);
-            return;
+            return false;
         }
     }
 };
