@@ -1,7 +1,5 @@
 const express = require('express');
 const {PORT} = require('./setup.js');
-let io;
-
 const app = express();
 
 app.use(express.json());
@@ -12,7 +10,8 @@ const server =  app.listen(PORT, () => {
     console.log(`spotify test server listening on port ${PORT}!`)
 });
 
-io = require('socket.io')(server);
+console.log('creating server socket');
+const io = require('socket.io')(server);
 
 
 module.exports = {io};
