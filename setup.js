@@ -19,7 +19,8 @@ const AUTH_URL = secret ? secret.AUTH_URL : process.env.AUTH_URL;
 const PORT = secret ? 8080 : process.env.PORT;
 const HOST_URL = secret ? 'http://localhost:8080' : process.env.HOST_URL;
 const KEY = secret ? secret.KEY : process.env.AES_KEY;
+const MONGO_URI = secret ? secret.MONGO_URI : process.env.MONGODB_URI
 
 
 module.exports = {OW_TOKEN, SPOTIFY_CLIENT, CALLBACK_URL, DEV_ID, SPOTIFY_SECRET, CHANNEL_ID, PLAYLIST_ID, AUTH_URL
-, PORT, HOST_URL};
+, PORT, HOST_URL, KEY, MONGO_URI};
