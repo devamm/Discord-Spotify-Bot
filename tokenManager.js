@@ -1,4 +1,23 @@
-const {KEY} = require('./setup')
+const {KEY, MONGO_URI} = require('./setup')
+const MongoClient = require('mongodb').MongoClient;
+const crypto = require('crypto');
+
+const client = new MongoClient(MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+});
+let keys;
+
+const connect = async () => {
+    try{
+        await client.connect();
+        console.log('connected to db!');
+        const db = client.db()
+        keys = db.collection("keys");
+    } catch(e){
+        console.log(e);
+    }
+}
 
 const encrypt = (text) => {
     const iv = crypto.randomBytes(16);
@@ -23,12 +42,19 @@ const decrpyt = (cipherText) => {
     return decrypted.toString();
 }
 
-const saveToken = (token) => {
+const saveToken = async (token) => {
     const cipher = encrypt(token);
+    await keys.updateOne({idx:1}, {$set: {token: cipher}});
+    console.log('saved encrpyted token to DB');
 }
 
-const getToken = () => {
-
+const getToken =  async () => {
+    const data = await keys.find({idx:1}).toArray();
+    if('token' in data[0]){
+        return decrpyt(data[0].token)
+    } else {
+        return null;
+    }
 }
 
-module.exports = {saveToken, getToken}
+module.exports = {saveToken, getToken, connect}

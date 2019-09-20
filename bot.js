@@ -1,6 +1,7 @@
 const { OW_TOKEN, DEV_ID, PLAYLIST_ID, CHANNEL_ID, AUTH_URL, HOST_URL } = require("./setup.js");
 const { getAuthCode, getInitialToken, getRefreshedToken} = require("./auth.js");
 const axios = require("axios");
+const {connect, getToken, saveToken} = require("./tokenManager");
 
 let validToken = false;
 let ACCESS_TOKEN = "";
@@ -20,6 +21,18 @@ const startOWBot = client => {
     console.log(`Logged in as ${client.user.tag}!`);
         await client.user.setActivity("High on Humans", { type: "LISTENING" });
         //read in refresh token (if it exists)
+        await connect();
+
+        REFRESH_TOKEN = await getToken();
+        if(REFRESH_TOKEN){
+            validToken = true;
+            newToken = await getRefreshedToken(REFRESH_TOKEN);
+            ACCESS_TOKEN = newToken.access_token;
+            REFRESH_TOKEN = newToken.refresh_token? newToken.refresh_token : REFRESH_TOKEN;
+            const expiry = newToken.expires_in;
+            invalidateToken(expiry);
+        }
+        //console.log(REFRESH_TOKEN)
     });
 
     client.on("message", msg => {
@@ -57,10 +70,14 @@ const listener = async (msg, client) => {
             const expiry = tokens.expires_in;
             validToken = true;
 
+            //save token to db
+            console.log(REFRESH_TOKEN);
+            await saveToken(REFRESH_TOKEN);
+
             //set timer to invalidate token 1 minute before actual expiry time
             invalidateToken(expiry);
         } catch (e) {
-            if(e.includes('timed out')){
+            if(e.toString().includes('timed out')){
                 await msg.channel.send(e);
             } else {
                 await msg.channel.send("Error with Spotify authentication");
